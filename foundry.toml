@@ -1,0 +1,12 @@
+[profile.default]
+out = 'out'
+libs = ["dependencies"]
+cache_path = 'forge-cache'
+src = "contracts"
+emv_version = "shanghai"
+solc_version = "0.8.22"
+
+[dependencies]
+"@openzeppelin-contracts" = { version = "5.0.2" }
+"@openzeppelin-contracts-upgradeable" = { version = "5.0.2" }
+forge-std = { version = "1.9.2" }
