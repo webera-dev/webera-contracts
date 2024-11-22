@@ -559,12 +559,12 @@ contract Vault is ERC4626Upgradeable, OwnableUpgradeable, ReentrancyGuard {
                 totalOutstandingDebt += assetsToDeposit;
             }
             newDebt = currentDebt + assetsToDeposit;
+
+            // Update strategy debt
+            _strategyParams[strategy_].currentDebt = newDebt;
         }
 
-        // Update strategy debt
-        _strategyParams[strategy_].currentDebt = newDebt;
-
-        emit DebtUpdated(strategy_, currentDebt, newDebt);
+        emit DebtUpdated(strategy_, currentDebt, _strategyParams[strategy_].currentDebt);
     }
 
     /**
