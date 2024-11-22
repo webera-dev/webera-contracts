@@ -75,6 +75,7 @@ contract Vault is ERC4626Upgradeable, OwnableUpgradeable {
     event StrategyAdded(address indexed strategy, uint256 length);
     event StrategyRevoked(address indexed strategy);
     event WithdrawQueueUpdated(address[] oldStrategyQueue, address[] newStrategyQueue);
+    event SetProfitMaxUnlockTime(uint256 profitMaxUnlockTime);
 
     // *** Initilizer ***
     function initialize(
@@ -668,6 +669,8 @@ contract Vault is ERC4626Upgradeable, OwnableUpgradeable {
 
     function setProfitMaxUnlockTime(uint256 profitMaxUnlockTime_) external onlyOwner {
         profitMaxUnlockTime = profitMaxUnlockTime_;
+
+        emit SetProfitMaxUnlockTime(profitMaxUnlockTime_);
     }
 
     /**
