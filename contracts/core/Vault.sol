@@ -573,7 +573,6 @@ contract Vault is ERC4626Upgradeable, OwnableUpgradeable {
         require(_strategyParams[strategy_].currentDebt >= assetsToWithdraw_, "Vault: Not enough debt in the strategy");
 
         uint256 assetsPreWithdraw = IERC20(asset()).balanceOf(address(this));
-
         IERC4626(strategy_).withdraw(assetsToWithdraw_, address(this), address(this));
         uint256 assetsPostWithdraw = IERC20(asset()).balanceOf(address(this));
 
@@ -581,6 +580,9 @@ contract Vault is ERC4626Upgradeable, OwnableUpgradeable {
 
         totalIdleAssets += actualAssetsWithdrawn;
         totalOutstandingDebt -= actualAssetsWithdrawn;
+
+        // update strategy current debt
+        _strategyParams[strategy_].currentDebt -= actualAssetsWithdrawn;
     }
 
     /**
