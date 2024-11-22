@@ -781,16 +781,10 @@ contract Vault is ERC4626Upgradeable, OwnableUpgradeable, ReentrancyGuard {
     function emergencyStrategy(address strategy_, uint256 amount_) external onlyOwner {
         require(_strategyParams[strategy_].isActivated, "Vault: Strategy not activated");
 
-        _withdrawFromStrategy(strategy_, amount_);
+        // To avoid pulling more than the strategy current debt
+        uint256 assetsToPullFromStrategy = Math.min(amount_, _strategyParams[strategy_].currentDebt);
 
-        uint256 strategyDebt = _strategyParams[strategy_].currentDebt;
-        if (strategyDebt > 0) {
-            if (strategyDebt > amount_) {
-                _strategyParams[strategy_].currentDebt -= amount_;
-            } else {
-                _strategyParams[strategy_].currentDebt = 0;
-            }
-        }
+        _withdrawFromStrategy(strategy_, assetsToPullFromStrategy);
     }
 
     // ** Factory config for `TokenizedStrategy` **
