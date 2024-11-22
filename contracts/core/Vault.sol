@@ -10,8 +10,9 @@ import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Own
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import {ITransparentUpgradeableProxy} from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 import {IFactory} from "../interfaces/IFactory.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
-contract Vault is ERC4626Upgradeable, OwnableUpgradeable {
+contract Vault is ERC4626Upgradeable, OwnableUpgradeable, ReentrancyGuard {
     // protocolFee is the fee charged by the protocol when harvesting profits, Basic Points 0.5% = 50, 1% = 100, 5% = 500,
     uint256 public protocolFee;
     // 10000 bps = 100%
@@ -136,7 +137,13 @@ contract Vault is ERC4626Upgradeable, OwnableUpgradeable {
     /// @param assets The amount of assets to withdraw
     /// @param receiver The receiver of the asset amount
     /// @param owner The owner of the shares, msg.sender has the spend allowance of owner's shares
-    function withdraw(uint256 assets, address receiver, address owner) public virtual override returns (uint256) {
+    function withdraw(uint256 assets, address receiver, address owner)
+        public
+        virtual
+        override
+        nonReentrant
+        returns (uint256)
+    {
         uint256 maxAssets = maxWithdraw(owner);
         if (assets > maxAssets) {
             revert ERC4626ExceededMaxWithdraw(owner, assets, maxAssets);
