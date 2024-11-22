@@ -156,8 +156,13 @@ contract Vault is ERC4626Upgradeable, OwnableUpgradeable {
                 }
 
                 address strategyToPullFrom = withdrawQueue[i];
-                uint256 actualAssetsWithdrawn = _withdrawFromStrategy(strategyToPullFrom, assetsToPull);
-
+                // Get the current debt of strategy
+                uint256 strategyDebt = _strategyParams[strategyToPullFrom].currentDebt;
+                // To avoid pulling more than the strategy current debt
+                uint256 assetsToPullFromStrategy = Math.min(assetsToPull, strategyDebt);
+                // Withdraw assets from the strategy
+                uint256 actualAssetsWithdrawn = _withdrawFromStrategy(strategyToPullFrom, assetsToPullFromStrategy);
+                // Update the remaining assets to pull
                 assetsToPull -= actualAssetsWithdrawn;
             }
         }
